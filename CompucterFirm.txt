@@ -1,0 +1,97 @@
+USE [ComputerFirmDB];
+GO
+
+/* === Suppliers === */
+INSERT INTO [dbo].[Suppliers] (Name, Contact, LeadTimeDays)
+VALUES 
+('TechVision Ltd', 'techvision@example.com, +358 400 123 456', 7),
+('Nordic Components', 'info@nordiccomp.fi, +358 500 555 888', 10),
+('FutureLine Supply', 'orders@futureline.fi, +358 450 112 334', 5),
+('EcoWare Oy', 'sales@ecoware.fi, +358 440 222 999', 8),
+('Digitron Group', 'contact@digitron.com, +358 410 777 111', 12);
+GO
+
+/* === Employees === */
+INSERT INTO [dbo].[Employees] (FullName, Position, Phone, Email)
+VALUES
+('Олег Иванов', 'Менеджер по продажам', '+358 400 100 101', 'oleg.ivanov@firm.fi'),
+('Мария Петрова', 'Бухгалтер', '+358 400 200 202', 'maria.petrova@firm.fi'),
+('Антон Сидоров', 'Логист', '+358 400 300 303', 'anton.sidorov@firm.fi'),
+('Екатерина Смирнова', 'Менеджер по закупкам', '+358 400 400 404', 'ekaterina.smirnova@firm.fi'),
+('Илья Кузнецов', 'Директор', '+358 400 500 505', 'ilya.kuznetsov@firm.fi');
+GO
+
+/* === Customers === */
+INSERT INTO [dbo].[Customers] (FullName, Phone, Email, IsOrganization)
+VALUES
+('ТОО "СеверТех"', '+358 400 123 900', 'info@severtech.fi', 1),
+('ООО "ДомКомп"', '+358 400 124 901', 'office@domcomp.fi', 1),
+('ИП Козлов Дмитрий', '+358 401 555 777', 'kozlov@business.fi', 0),
+('ПАО "ИнфоСервис"', '+358 402 333 111', 'sales@infoservice.fi', 1),
+('Анна Карху', '+358 403 111 888', 'anna.karhu@gmail.com', 0);
+GO
+
+/* === Products === */
+INSERT INTO [dbo].[Products] (Name, Description, Price, Quantity, Status, SupplierId, Specs, IsExclusive)
+VALUES
+('Ноутбук Acer Aspire 7', '15.6", Ryzen 5, 16GB RAM, SSD 512GB', 799.00, 25, 'InStock', 1, 'Чёрный корпус, Wi-Fi 6, HDMI', 0),
+('Монитор Samsung 27"', 'IPS, 75Hz, HDMI + DisplayPort', 219.00, 40, 'InStock', 2, 'Безрамочный дизайн', 0),
+('Принтер HP LaserJet Pro', 'Лазерный, A4, Wi-Fi, 22 стр/мин', 159.00, 18, 'InStock', 3, 'Поддержка AirPrint', 0),
+('Системный блок Digitron X200', 'Intel i5, 16GB RAM, SSD 1TB', 999.00, 10, 'InStock', 5, 'Корпус MicroATX', 1),
+('Клавиатура Logitech K380', 'Bluetooth, компактная', 55.00, 60, 'InStock', 4, 'Поддержка iOS, Android, Windows', 0);
+GO
+
+/* === Orders === */
+INSERT INTO [dbo].[Orders] (OrderNumber, CustomerId, CreatedAt, Total, Status, ResponsibleEmployeeId, DeliveryAddress, IsGuaranteeProvided)
+VALUES
+('ORD-001', 1, DATEADD(day, -15, SYSDATETIME()), 2377.00, 'Completed', 1, 'Helsinki, Mannerheimintie 5', 1),
+('ORD-002', 2, DATEADD(day, -10, SYSDATETIME()), 159.00, 'Processing', 4, 'Espoo, Lintuvaarantie 8', 0),
+('ORD-003', 3, DATEADD(day, -5, SYSDATETIME()), 219.00, 'New', 2, 'Vantaa, Peltolantie 12', 0),
+('ORD-004', 4, DATEADD(day, -3, SYSDATETIME()), 999.00, 'Shipped', 3, 'Turku, Aurakatu 9', 1),
+('ORD-005', 5, DATEADD(day, -1, SYSDATETIME()), 854.00, 'Completed', 1, 'Tampere, Hämeenkatu 25', 1);
+GO
+
+/* === OrderItems === */
+INSERT INTO [dbo].[OrderItems] (OrderId, ProductId, Quantity, UnitPrice)
+VALUES
+(1, 1, 2, 799.00),
+(1, 2, 1, 219.00),
+(1, 5, 3, 55.00),
+(2, 3, 1, 159.00),
+(3, 2, 1, 219.00),
+(4, 4, 1, 999.00),
+(5, 1, 1, 799.00),
+(5, 5, 1, 55.00);
+GO
+
+/* === PurchaseOrders === */
+INSERT INTO [dbo].[PurchaseOrders] (PO_Number, SupplierId, CreatedAt, ExpectedDeliveryDate, Status, Notes)
+VALUES
+('PO-1001', 1, DATEADD(day, -20, SYSDATETIME()), DATEADD(day, -10, GETDATE()), 'Received', 'Закупка ноутбуков Acer'),
+('PO-1002', 3, DATEADD(day, -15, SYSDATETIME()), DATEADD(day, -5, GETDATE()), 'Shipped', 'Принтеры HP'),
+('PO-1003', 5, DATEADD(day, -7, SYSDATETIME()), DATEADD(day, +3, GETDATE()), 'Requested', 'Системные блоки Digitron'),
+('PO-1004', 4, DATEADD(day, -3, SYSDATETIME()), DATEADD(day, +5, GETDATE()), 'Pending', 'Клавиатуры Logitech'),
+('PO-1005', 2, DATEADD(day, -1, SYSDATETIME()), DATEADD(day, +7, GETDATE()), 'Processing', 'Мониторы Samsung');
+GO
+
+/* === PurchaseOrderItems === */
+INSERT INTO [dbo].[PurchaseOrderItems] (PurchaseOrderId, ProductId, Quantity, UnitCost)
+VALUES
+(1, 1, 20, 650.00),
+(2, 3, 15, 120.00),
+(3, 4, 8, 820.00),
+(4, 5, 30, 42.00),
+(5, 2, 25, 180.00);
+GO
+
+/* === InventoryMovements === */
+INSERT INTO [dbo].[InventoryMovements] (ProductId, ChangeQuantity, Reason, ReferenceId)
+VALUES
+(1, -2, 'Продажа', 'ORD-001'),
+(2, -1, 'Продажа', 'ORD-001'),
+(3, -1, 'Продажа', 'ORD-002'),
+(5, -3, 'Продажа', 'ORD-001'),
+(4, +8, 'Закупка', 'PO-1003'),
+(5, +30, 'Поставка', 'PO-1004'),
+(2, +25, 'Закупка', 'PO-1005');
+GO
